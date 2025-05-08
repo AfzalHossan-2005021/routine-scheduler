@@ -1,0 +1,6 @@
+[submodule "routine-scheduler-backend"]
+	path = routine-scheduler-backend
+	url = https://github.com/AfzalHossan-2005021/routine-scheduler-backend.git
+[submodule "routine-scheduler-frontend"]
+	path = routine-scheduler-frontend
+	url = https://github.com/AfzalHossan-2005021/routine-scheduler-frontend.git
