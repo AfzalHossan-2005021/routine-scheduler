@@ -11,8 +11,8 @@ services:
     volumes:
       - ./routine-scheduler-frontend:/app
       - /app/node_modules
-    networks:
-      - app-network
+    # networks:
+    #   - app-network
 
   backend:
     build: ./routine-scheduler-backend
@@ -24,45 +24,45 @@ services:
     volumes:
       - ./routine-scheduler-backend:/app
       - /app/node_modules
-    networks:
-      - app-network
-    # depends_on:
-    #   - db
+    # networks:
+    #   - app-network
+    depends_on:
+      - db
 
-  # db:
-  #   container_name: routine-scheduler-db
-  #   image: postgres:15-alpine3.20
-  #   restart: always
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-  #     - db-data:/var/lib/postgresql/data
-  #   networks:
-  #     - app-network
+  db:
+    container_name: routine-scheduler-db
+    image: postgres:15-alpine3.20
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/postgresql/data
+    # networks:
+    #   - app-network
 
-  # pgadmin:
-  #   container_name: pgadmin4
-  #   image: dpage/pgadmin4
-  #   restart: always
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-  #   ports:
-  #     - "5050:80"
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - db
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    # networks:
+    #   - app-network
+    depends_on:
+      - db
 
-networks:
-  app-network:
-    driver: bridge
+# networks:
+#   app-network:
+#     driver: bridge
 
-# volumes:
-#   db-data:
-#     driver: local
+volumes:
+  db-data:
+    driver: local
