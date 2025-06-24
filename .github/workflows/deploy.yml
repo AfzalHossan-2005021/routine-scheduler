@@ -1,0 +1,32 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches:
+      - deployed  
+
+jobs:
+  deploy:
+    name: Deploy to VM
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH key
+      run: |
+        echo "${{ secrets.VM_SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+
+    - name: Copy Project to VM via rsync
+      run: |
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}
+
+    - name: Restart Docker Compose on VM
+      run: |
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << EOF
+          cd ${{ secrets.VM_PROJECT_PATH }}
+          docker compose down
+          docker compose up -d --build
+        EOF
