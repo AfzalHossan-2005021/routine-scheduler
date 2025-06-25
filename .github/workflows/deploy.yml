@@ -1,4 +1,4 @@
-name: Deploy to VM
+name: Test and Deploy to VM
 
 on:
   push:
@@ -6,9 +6,21 @@ on:
       - deployed  
 
 jobs:
+  test:
+    name: Placeholder Test Project
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    -namee: Placeholder test step
+      run: echo "✅Tests haven't been implemented yet. Skipping......"  
+
   deploy:
     name: Deploy to VM
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
     - name: Checkout Code
