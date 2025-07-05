@@ -165,7 +165,8 @@ INSERT INTO public.configs ("key",value) VALUES
 	('THEORY_PREFERENCES_COMPLETE','0'),
 	('THEORY_EMAIL','Sample theory email'),
 	('SCHEDULE_EMAIL','Sample schedule email'),
-	('SESSIONAL_EMAIL','Sample sessional email');
+	('SESSIONAL_EMAIL','Sample sessional email'),
+	('THEORY_PREF_STATUS','0');
 INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
 	('CHEM113','Chemistry',0,'Jan-23',3.0),
 	('CHEM118','Chemistry Sessional',1,'Jan-23',1.0),
