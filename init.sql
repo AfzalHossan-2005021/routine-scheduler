@@ -119,7 +119,7 @@ CREATE TABLE public.schedule_assignment (
 	"time" int4 NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
 	CONSTRAINT schedule_assignment_check CHECK (((day)::text = ANY (ARRAY[('Saturday'::character varying)::text, ('Sunday'::character varying)::text, ('Monday'::character varying)::text, ('Tuesday'::character varying)::text, ('Wednesday'::character varying)::text]))),
-	CONSTRAINT schedule_assignment_pk PRIMARY KEY (session, batch, section, day, "time", department),
+	CONSTRAINT schedule_assignment_pk PRIMARY KEY (department, batch, section, day, "time", course_id),
 	CONSTRAINT schedule_assignment_un UNIQUE (course_id, session, batch, section, day, "time", department),
 	CONSTRAINT schedule_assignment_fk FOREIGN KEY (course_id,"session") REFERENCES public.courses(course_id,"session"),
 	CONSTRAINT schedule_assignment_fk1 FOREIGN KEY (batch,"section") REFERENCES public.sections(batch,"section") ON DELETE CASCADE ON UPDATE CASCADE
@@ -159,14 +159,17 @@ CREATE TABLE public.departmental_level_term (
 INSERT INTO public."admin" (username,email,"password") VALUES
 	('admin','ask@mail.com','$2a$12$9DOeaW4x5gJqWC4WKXMInOzkJUDqbA2x60QhydtAOE81W7qs8Ymqm');
 INSERT INTO public.configs ("key",value) VALUES
-	('demo','hi this is a template body'),
 	('CURRENT_SESSION','Jan-23'),
 	('ALL_SESSIONS','["Jan-23"]'),
 	('THEORY_PREFERENCES_COMPLETE','0'),
 	('THEORY_EMAIL','Sample theory email'),
 	('SCHEDULE_EMAIL','Sample schedule email'),
 	('SESSIONAL_EMAIL','Sample sessional email'),
-	('THEORY_PREF_STATUS','0');
+	('THEORY_PREF_STATUS','0'),
+	('days','["Saturday","Sunday","Monday","Tuesday","Wednesday"]'),
+	('times','[8,9,10,11,12,1,2,3,4]'),
+	('possibleLabTimes','[8,11,2]');
+	
 INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
 	('CHEM113','Chemistry',0,'Jan-23',3.0),
 	('CHEM118','Chemistry Sessional',1,'Jan-23',1.0),
