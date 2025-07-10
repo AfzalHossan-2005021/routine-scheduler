@@ -84,7 +84,7 @@ CREATE TABLE public.sections (
 	"session" varchar NOT NULL,
 	level_term varchar NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
-	CONSTRAINT sections_pk PRIMARY KEY (batch, section),
+	CONSTRAINT sections_pk PRIMARY KEY (department, batch, section),
 	CONSTRAINT sections_fk FOREIGN KEY (room) REFERENCES public.rooms(room) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT sections_department_level_term_fkey FOREIGN KEY (department, level_term) REFERENCES public.level_term_unique(department, level_term)
 );
@@ -106,7 +106,7 @@ CREATE TABLE public.courses_sections (
 	room_no character varying DEFAULT '103'::character varying,
     department character varying DEFAULT 'CSE'::character varying,
 	CONSTRAINT courses_sections_pk PRIMARY KEY (course_id, session, batch, section),
-	CONSTRAINT courses_sections_fk FOREIGN KEY (batch,"section") REFERENCES public.sections(batch,"section") ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT courses_sections_fk FOREIGN KEY (department, batch,"section") REFERENCES public.sections(department, batch,"section") ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT courses_sections_fk_c FOREIGN KEY (course_id,"session") REFERENCES public.courses(course_id,"session") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -118,11 +118,12 @@ CREATE TABLE public.schedule_assignment (
 	"day" varchar NOT NULL,
 	"time" int4 NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
+	room_no character varying DEFAULT '103'::character varying,
 	CONSTRAINT schedule_assignment_check CHECK (((day)::text = ANY (ARRAY[('Saturday'::character varying)::text, ('Sunday'::character varying)::text, ('Monday'::character varying)::text, ('Tuesday'::character varying)::text, ('Wednesday'::character varying)::text]))),
 	CONSTRAINT schedule_assignment_pk PRIMARY KEY (department, batch, section, day, "time", course_id),
 	CONSTRAINT schedule_assignment_un UNIQUE (course_id, session, batch, section, day, "time", department),
 	CONSTRAINT schedule_assignment_fk FOREIGN KEY (course_id,"session") REFERENCES public.courses(course_id,"session"),
-	CONSTRAINT schedule_assignment_fk1 FOREIGN KEY (batch,"section") REFERENCES public.sections(batch,"section") ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT schedule_assignment_fk1 FOREIGN KEY (department, batch,"section") REFERENCES public.sections(department, batch,"section") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE public.teacher_sessional_assignment (
@@ -156,6 +157,22 @@ CREATE TABLE public.departmental_level_term (
 	CONSTRAINT departmental_level_term_level_term_department_fkey FOREIGN KEY (level_term, department) REFERENCES public.level_term_unique(level_term, department)
 );
 
+CREATE TABLE public.default_section_count (
+	department character varying NOT NULL,
+	section_count int4 NOT NULL,
+	subsection_count_per_section int4 NOT NULL,
+	CONSTRAINT default_section_count_pkey PRIMARY KEY (department)
+);
+
+CREATE TABLE public.section_count (
+	batch int4 NOT NULL,
+	department character varying NOT NULL,
+	section_count int4 NOT NULL,
+	subsection_count_per_section int4 NOT NULL,
+	CONSTRAINT section_count_pkey PRIMARY KEY (batch, department),
+	CONSTRAINT section_count_department_fkey FOREIGN KEY (department) REFERENCES public.default_section_count(department) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 INSERT INTO public."admin" (username,email,"password") VALUES
 	('admin','ask@mail.com','$2a$12$9DOeaW4x5gJqWC4WKXMInOzkJUDqbA2x60QhydtAOE81W7qs8Ymqm');
 INSERT INTO public.configs ("key",value) VALUES
@@ -168,7 +185,9 @@ INSERT INTO public.configs ("key",value) VALUES
 	('THEORY_PREF_STATUS','0'),
 	('days','["Saturday","Sunday","Monday","Tuesday","Wednesday"]'),
 	('times','[8,9,10,11,12,1,2,3,4]'),
-	('possibleLabTimes','[8,11,2]');
+	('possibleLabTimes','[8,11,2]'),
+	('LEVEL_COUNT', '4'),
+	('TERM_COUNT', '2');
 	
 INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
 	('CHEM113','Chemistry',0,'Jan-23',3.0),
