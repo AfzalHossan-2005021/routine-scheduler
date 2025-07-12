@@ -719,3 +719,11 @@ INSERT INTO public.forms (id, type, response, initial) VALUES
 	('7b51df87-1f66-4cd0-8806-62d0417a44a3',	'sessional-pref',	'"CSE102","CSE110"',	'MUS'),
 	('8521da6d-3565-42fb-975c-9de35226bbba',	'sessional-pref',	'"CSE102","CSE110"',	'SAH'),
 	('003c2d4f-85ba-4c93-9c1e-6dad908bb929',	'sessional-pref',	'"CSE110","CSE102"',	'IJ');
+INSERT INTO default_section_count (department, section_count, subsection_count_per_section) VALUES
+	('CSE', 3, 3),
+	('EEE', 1, 1),
+	('BME', 1, 1),
+	('IPE', 1, 1),
+	('MME', 1, 1),
+	('NCE', 1, 1),
+	('URP', 1, 1);
