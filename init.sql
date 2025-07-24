@@ -103,7 +103,8 @@ CREATE TABLE public.courses_sections (
 	"session" varchar NOT NULL,
 	batch int4 NOT NULL,
 	"section" varchar NOT NULL,
-	room_no character varying DEFAULT '103'::character varying,
+	room_no character varying DEFAULT ''::character varying,
+	teachers text[] DEFAULT '{}'::text[],
     department character varying DEFAULT 'CSE'::character varying,
 	CONSTRAINT courses_sections_pk PRIMARY KEY (course_id, session, batch, section),
 	CONSTRAINT courses_sections_fk FOREIGN KEY (department, batch,"section") REFERENCES public.sections(department, batch,"section") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -118,7 +119,8 @@ CREATE TABLE public.schedule_assignment (
 	"day" varchar NOT NULL,
 	"time" int4 NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
-	room_no character varying DEFAULT '103'::character varying,
+	room_no character varying,
+	teachers text[] DEFAULT '{}'::text[],
 	CONSTRAINT schedule_assignment_check CHECK (((day)::text = ANY (ARRAY[('Saturday'::character varying)::text, ('Sunday'::character varying)::text, ('Monday'::character varying)::text, ('Tuesday'::character varying)::text, ('Wednesday'::character varying)::text]))),
 	CONSTRAINT schedule_assignment_pk PRIMARY KEY (department, batch, section, day, "time", course_id),
 	CONSTRAINT schedule_assignment_un UNIQUE (course_id, session, batch, section, day, "time", department),
@@ -171,6 +173,11 @@ CREATE TABLE public.section_count (
 	subsection_count_per_section int4 NOT NULL,
 	CONSTRAINT section_count_pkey PRIMARY KEY (batch, department),
 	CONSTRAINT section_count_department_fkey FOREIGN KEY (department) REFERENCES public.default_section_count(department) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE public.hosted_departments (
+	department character varying NOT NULL,
+	CONSTRAINT hosted_department_pkey PRIMARY KEY (department)
 );
 
 INSERT INTO public."admin" (username,email,"password") VALUES
@@ -557,12 +564,12 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('HUM347', 'Ethics in Society and E-Governance', 0, 3.00, 'HUM', 'CSE', 'L-3 T-2'),
 
 	-- Level 4, Term 1 Courses
-	('CSE400', 'Project and Thesis', 0, 3.00, 'CSE', 'CSE', 'L-4 T-1'),
+	('CSE400', 'Project and Thesis', 1, 3.00, 'CSE', 'CSE', 'L-4 T-1'),
 	('CSE401', 'Numerical Analysis, Simulation and Modeling', 0, 3.00, 'CSE', 'CSE', 'L-4 T-1'),
 	('CSE402', 'Numerical Analysis, Simulation and Modeling Sessional', 1, 0.75, 'CSE', 'CSE', 'L-4 T-1'),
 	('CSE405', 'Cyber Security', 0, 3.00, 'CSE', 'CSE', 'L-4 T-1'),
 	('CSE406', 'Cyber Security Sessional', 1, 0.75, 'CSE', 'CSE', 'L-4 T-1'),
-	('CSE450', 'Capstone Project', 0, 1.50, 'CSE', 'CSE', 'L-4 T-1'),
+	('CSE450', 'Capstone Project', 1, 1.50, 'CSE', 'CSE', 'L-4 T-1'),
 	('HUM475', 'Engineering Economics', 0, 3.00, 'HUM', 'CSE', 'L-4 T-1'),
 
 	-- Level 4, Term 2 Courses
@@ -720,10 +727,65 @@ INSERT INTO public.forms (id, type, response, initial) VALUES
 	('8521da6d-3565-42fb-975c-9de35226bbba',	'sessional-pref',	'"CSE102","CSE110"',	'SAH'),
 	('003c2d4f-85ba-4c93-9c1e-6dad908bb929',	'sessional-pref',	'"CSE110","CSE102"',	'IJ');
 INSERT INTO default_section_count (department, section_count, subsection_count_per_section) VALUES
-	('CSE', 3, 3),
-	('EEE', 1, 1),
-	('BME', 1, 1),
-	('IPE', 1, 1),
-	('MME', 1, 1),
+	('CSE', 3, 2),
+	('EEE', 3, 2),
+	('BME', 1, 2),
+	('IPE', 2, 2),
+	('MME', 1, 2),
 	('NCE', 1, 1),
 	('URP', 1, 1);
+
+INSERT INTO public.section_count (batch, department, section_count, subsection_count_per_section) VALUES
+	('20', 'CSE', 2, 2),
+	('20', 'EEE', 3, 2),
+	('20', 'BME', 1, 2),
+	('20', 'IPE', 2, 2),
+	('20', 'MME', 1, 2),
+	('20', 'NCE', 1, 1),
+	('20', 'URP', 1, 1);
+
+INSERT INTO public.section_count (batch, department, section_count, subsection_count_per_section) VALUES
+	('21', 'CSE', 3, 2),
+	('21', 'EEE', 3, 2),
+	('21', 'BME', 1, 2),
+	('21', 'IPE', 2, 2),
+	('21', 'MME', 1, 2),
+	('21', 'NCE', 1, 1),
+	('21', 'URP', 1, 1);
+
+INSERT INTO public.section_count (batch, department, section_count, subsection_count_per_section) VALUES
+	('22', 'CSE', 3, 2),
+	('22', 'EEE', 3, 2),
+	('22', 'BME', 1, 2),
+	('22', 'IPE', 2, 2),
+	('22', 'MME', 1, 2),
+	('22', 'NCE', 1, 1),
+	('22', 'URP', 1, 1);
+
+INSERT INTO public.section_count (batch, department, section_count, subsection_count_per_section) VALUES
+	('23', 'CSE', 3, 2),
+	('23', 'EEE', 3, 2),
+	('23', 'BME', 1, 2),
+	('23', 'IPE', 2, 2),
+	('23', 'MME', 1, 2),
+	('23', 'NCE', 1, 1),
+	('23', 'URP', 1, 1);
+
+INSERT INTO public.section_count (batch, department, section_count, subsection_count_per_section) VALUES
+	('24', 'CSE', 3, 2),
+	('24', 'EEE', 3, 2),
+	('24', 'BME', 1, 2),
+	('24', 'IPE', 2, 2),
+	('24', 'MME', 1, 2),
+	('24', 'NCE', 1, 1),
+	('24', 'URP', 1, 1);
+
+INSERT INTO public.hosted_departments (department) VALUES
+	('CHEM'),
+	('CSE'),
+	('EEE'),
+	('HUM'),
+	('IPE'),
+	('MATH'),
+	('ME'),
+	('PHY');
