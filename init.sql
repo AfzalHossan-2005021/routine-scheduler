@@ -85,7 +85,6 @@ CREATE TABLE public.sections (
 	level_term varchar NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
 	CONSTRAINT sections_pk PRIMARY KEY (department, batch, section),
-	CONSTRAINT sections_fk FOREIGN KEY (room) REFERENCES public.rooms(room) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT sections_department_level_term_fkey FOREIGN KEY (department, level_term) REFERENCES public.level_term_unique(department, level_term)
 );
 
@@ -103,7 +102,6 @@ CREATE TABLE public.courses_sections (
 	"session" varchar NOT NULL,
 	batch int4 NOT NULL,
 	"section" varchar NOT NULL,
-	room_no character varying DEFAULT ''::character varying,
 	teachers text[] DEFAULT '{}'::text[],
     department character varying DEFAULT 'CSE'::character varying,
 	CONSTRAINT courses_sections_pk PRIMARY KEY (course_id, session, batch, section),
@@ -150,15 +148,6 @@ CREATE TABLE public.all_courses (
 	CONSTRAINT all_courses_pk PRIMARY KEY (course_id, level_term)
 );
 
-CREATE TABLE public.departmental_level_term (
-    level_term_section character varying NOT NULL,
-    full_name character varying,
-    level_term character varying,
-    department character varying,
-	CONSTRAINT departmental_level_term_pkey PRIMARY KEY (level_term_section),
-	CONSTRAINT departmental_level_term_level_term_department_fkey FOREIGN KEY (level_term, department) REFERENCES public.level_term_unique(level_term, department)
-);
-
 CREATE TABLE public.default_section_count (
 	department character varying NOT NULL,
 	section_count int4 NOT NULL,
@@ -195,50 +184,7 @@ INSERT INTO public.configs ("key",value) VALUES
 	('possibleLabTimes','[8,11,2]'),
 	('LEVEL_COUNT', '4'),
 	('TERM_COUNT', '2');
-	
-INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
-	('CHEM113','Chemistry',0,'Jan-23',3.0),
-	('CHEM118','Chemistry Sessional',1,'Jan-23',1.0),
-	('CSE105','Data Structures and Algorithms I',0,'Jan-23',3.0),
-	('CSE106','Data Structures and Algorithms I Sessional',1,'Jan-23',1.0),
-	('CSE107','Object Oriented Programming Language',0,'Jan-23',3.0),
-	('CSE108','Object Oriented Programming Language Sessional',1,'Jan-23',1.0),
-	('CSE207','Data Structures and Algorithms II',0,'Jan-23',3.0),
-	('CSE208','Data Structures and Algorithms II Sessional',1,'Jan-23',1.0),
-	('CSE211','Theory of Computation',0,'Jan-23',3.0),
-	('CSE215','Database',0,'Jan-23',3.0);
-INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
-	('CSE216','Database Sessional',1,'Jan-23',1.0),
-	('CSE283','Digital Techniques',0,'Jan-23',3.0),
-	('CSE284','Digital Techniques Sessional',1,'Jan-23',1.0),
-	('CSE301','Mathematical Analysis for Computer Science',0,'Jan-23',3.0),
-	('CSE313','Operating System',0,'Jan-23',3.0),
-	('CSE314','Operating System Sessional',1,'Jan-23',1.0),
-	('CSE317','Artificial Intelligence',0,'Jan-23',3.0),
-	('CSE318','Artificial Intelligence Sessional',1,'Jan-23',1.0),
-	('CSE321','Computer Networks',0,'Jan-23',3.0),
-	('CSE322','Computer Networks Sessional',1,'Jan-23',1.0);
-INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
-	('CSE325','Information System Design',0,'Jan-23',3.0),
-	('CSE326','Information System Design Sessional',1,'Jan-23',1.0),
-	('CSE400','Project and Thesis',1,'Jan-23',1.0),
-	('CSE405','Computer Security',0,'Jan-23',3.0),
-	('CSE406','Computer Security Sessional',1,'Jan-23',1.0),
-	('CSE408','Software Development Sessional',1,'Jan-23',1.0),
-	('CSE409','Computer Graphics',0,'Jan-23',3.0),
-	('CSE410','Computer Graphics Sessional',1,'Jan-23',1.0),
-	('CSE421','Basic Graph Theory',0,'Jan-23',3.0),
-	('CSE423','Fault Tolerant Systems',0,'Jan-23',3.0);
-INSERT INTO public.courses (course_id,"name","type","session",class_per_week) VALUES
-	('CSE463','Introduction to Bioinformatics',0,'Jan-23',3.0),
-	('EEE269','Electrical Drives and Instrumentation',0,'Jan-23',3.0),
-	('EEE270','Electrical Drives and Instrumentation Sessional',1,'Jan-23',1.0),
-	('HUM475','Engineering Economics',0,'Jan-23',3.0),
-	('MATH143','Linear Algebra',0,'Jan-23',3.0),
-	('MATH247','Linear Algebra, Laplace Transformation and Fourier Analysis',0,'Jan-23',3.0),
-	('ME165','Basic Mechanical Engineering',0,'Jan-23',3.0),
-	('ME174','Mechanical Engineering Drawing and CAD',1,'Jan-23',1.0),
-	('CT','Class Test',0,'Jan-23',3.0);
+
 INSERT INTO public.rooms (room,"type") VALUES
 	('MCL',1),
 	('MML',1),
@@ -287,36 +233,7 @@ INSERT INTO public.level_term_unique (level_term, department) VALUES
 	('L-2 T-1',	'MME'),
 	('L-2 T-1',	'NCE'),
 	('L-1 T-2',	'URP');
-INSERT INTO public.sections (batch,"section","type",room,"session",level_term) VALUES
-	(18,'A',0,'203','Jan-23','L-4 T-1'),
-	(18,'B',0,'204','Jan-23','L-4 T-1'),
-	(18,'A1',1,NULL,'Jan-23','L-4 T-1'),
-	(18,'A2',1,NULL,'Jan-23','L-4 T-1'),
-	(18,'B1',1,NULL,'Jan-23','L-4 T-1'),
-	(18,'B2',1,NULL,'Jan-23','L-4 T-1'),
-	(19,'A',0,'205','Jan-23','L-3 T-2'),
-	(19,'B',0,'206','Jan-23','L-3 T-2'),
-	(19,'A1',1,NULL,'Jan-23','L-3 T-2'),
-	(19,'A2',1,NULL,'Jan-23','L-3 T-2');
-INSERT INTO public.sections (batch,"section","type",room,"session",level_term) VALUES
-	(19,'B1',1,NULL,'Jan-23','L-3 T-2'),
-	(19,'B2',1,NULL,'Jan-23','L-3 T-2'),
-	(20,'A',0,'103','Jan-23','L-2 T-2'),
-	(20,'B',0,'104','Jan-23','L-2 T-2'),
-	(20,'A1',1,NULL,'Jan-23','L-2 T-2'),
-	(20,'A2',1,NULL,'Jan-23','L-2 T-2'),
-	(20,'B1',1,NULL,'Jan-23','L-2 T-2'),
-	(20,'B2',1,NULL,'Jan-23','L-2 T-2'),
-	(21,'A',0,'107','Jan-23','L-1 T-2'),
-	(21,'B',0,'108','Jan-23','L-1 T-2');
-INSERT INTO public.sections (batch,"section","type",room,"session",level_term) VALUES
-	(21,'C',0,'109','Jan-23','L-1 T-2'),
-	(21,'A1',1,NULL,'Jan-23','L-1 T-2'),
-	(21,'A2',1,NULL,'Jan-23','L-1 T-2'),
-	(21,'B1',1,NULL,'Jan-23','L-1 T-2'),
-	(21,'B2',1,NULL,'Jan-23','L-1 T-2'),
-	(21,'C1',1,NULL,'Jan-23','L-1 T-2'),
-	(21,'C2',1,NULL,'Jan-23','L-1 T-2');
+
 INSERT INTO public.teachers (initial,"name",surname,email,seniority_rank,active,theory_courses,sessional_courses) VALUES
 	('MMA','Dr. Muhammad Masroor Ali','Masroor','routine.scheduler.buet@gmail.com',1,1,1,1),
 	('MSR','Dr. Md. Saidur Rahman','Saidur','routine.scheduler.buet@gmail.com',2,0,1,1),
@@ -365,137 +282,6 @@ INSERT INTO public.teachers (initial,"name",surname,email,seniority_rank,active,
 	('AAI','Dr. A. B. M. Alim Al Islam','Alim','routine.scheduler.buet@gmail.com',12,0,1,1),
 	('MMAK','Dr. Md. Mostofa Akbar','Mostofa','routine.scheduler.buet@gmail.com',4,0,1,1),
 	('MTZ','Md. Toufikuzzaman','Toufik','routine.scheduler.buet@gmail.com',31,1,1,1);
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CHEM113','Jan-23',21,'A'),
-	('CHEM113','Jan-23',21,'B'),
-	('CHEM113','Jan-23',21,'C'),
-	('CHEM118','Jan-23',21,'A1'),
-	('CHEM118','Jan-23',21,'A2'),
-	('CHEM118','Jan-23',21,'B1'),
-	('CHEM118','Jan-23',21,'B2'),
-	('CHEM118','Jan-23',21,'C1'),
-	('CHEM118','Jan-23',21,'C2'),
-	('CSE105','Jan-23',21,'A');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE105','Jan-23',21,'B'),
-	('CSE105','Jan-23',21,'C'),
-	('CSE106','Jan-23',21,'A1'),
-	('CSE106','Jan-23',21,'A2'),
-	('CSE106','Jan-23',21,'B1'),
-	('CSE106','Jan-23',21,'B2'),
-	('CSE106','Jan-23',21,'C1'),
-	('CSE106','Jan-23',21,'C2'),
-	('CSE107','Jan-23',21,'A'),
-	('CSE107','Jan-23',21,'B');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE107','Jan-23',21,'C'),
-	('CSE108','Jan-23',21,'A1'),
-	('CSE108','Jan-23',21,'A2'),
-	('CSE108','Jan-23',21,'B1'),
-	('CSE108','Jan-23',21,'B2'),
-	('CSE108','Jan-23',21,'C1'),
-	('CSE108','Jan-23',21,'C2'),
-	('CSE207','Jan-23',20,'A'),
-	('CSE207','Jan-23',20,'B'),
-	('CSE208','Jan-23',20,'A1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE208','Jan-23',20,'A2'),
-	('CSE208','Jan-23',20,'B1'),
-	('CSE208','Jan-23',20,'B2'),
-	('CSE211','Jan-23',20,'A'),
-	('CSE211','Jan-23',20,'B'),
-	('CSE215','Jan-23',20,'A'),
-	('CSE215','Jan-23',20,'B'),
-	('CSE216','Jan-23',20,'A1'),
-	('CSE216','Jan-23',20,'A2'),
-	('CSE216','Jan-23',20,'B1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE216','Jan-23',20,'B2'),
-	('CSE283','Jan-23',20,'A'),
-	('CSE283','Jan-23',20,'B'),
-	('CSE284','Jan-23',20,'A1'),
-	('CSE284','Jan-23',20,'A2'),
-	('CSE284','Jan-23',20,'B1'),
-	('CSE284','Jan-23',20,'B2'),
-	('CSE301','Jan-23',19,'A'),
-	('CSE301','Jan-23',19,'B'),
-	('CSE313','Jan-23',19,'A');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE313','Jan-23',19,'B'),
-	('CSE314','Jan-23',19,'A1'),
-	('CSE314','Jan-23',19,'A2'),
-	('CSE314','Jan-23',19,'B1'),
-	('CSE314','Jan-23',19,'B2'),
-	('CSE317','Jan-23',19,'A'),
-	('CSE317','Jan-23',19,'B'),
-	('CSE318','Jan-23',19,'A1'),
-	('CSE318','Jan-23',19,'A2'),
-	('CSE318','Jan-23',19,'B1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE318','Jan-23',19,'B2'),
-	('CSE321','Jan-23',19,'A'),
-	('CSE321','Jan-23',19,'B'),
-	('CSE322','Jan-23',19,'A1'),
-	('CSE322','Jan-23',19,'A2'),
-	('CSE322','Jan-23',19,'B1'),
-	('CSE322','Jan-23',19,'B2'),
-	('CSE325','Jan-23',19,'A'),
-	('CSE325','Jan-23',19,'B'),
-	('CSE326','Jan-23',19,'A1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE326','Jan-23',19,'A2'),
-	('CSE326','Jan-23',19,'B1'),
-	('CSE326','Jan-23',19,'B2'),
-	('CSE400','Jan-23',18,'A1'),
-	('CSE400','Jan-23',18,'A2'),
-	('CSE400','Jan-23',18,'B1'),
-	('CSE400','Jan-23',18,'B2'),
-	('CSE405','Jan-23',18,'A'),
-	('CSE405','Jan-23',18,'B'),
-	('CSE406','Jan-23',18,'A1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE406','Jan-23',18,'A2'),
-	('CSE406','Jan-23',18,'B1'),
-	('CSE406','Jan-23',18,'B2'),
-	('CSE408','Jan-23',18,'A1'),
-	('CSE408','Jan-23',18,'A2'),
-	('CSE408','Jan-23',18,'B1'),
-	('CSE408','Jan-23',18,'B2'),
-	('CSE409','Jan-23',18,'A'),
-	('CSE409','Jan-23',18,'B'),
-	('CSE410','Jan-23',18,'A1');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('CSE410','Jan-23',18,'A2'),
-	('CSE410','Jan-23',18,'B1'),
-	('CSE410','Jan-23',18,'B2'),
-	('CSE421','Jan-23',18,'A'),
-	('CSE463','Jan-23',18,'A'),
-	('CSE463','Jan-23',18,'B'),
-	('EEE269','Jan-23',20,'A'),
-	('EEE269','Jan-23',20,'B'),
-	('EEE270','Jan-23',20,'A1'),
-	('EEE270','Jan-23',20,'A2');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('EEE270','Jan-23',20,'B1'),
-	('EEE270','Jan-23',20,'B2'),
-	('HUM475','Jan-23',18,'A'),
-	('HUM475','Jan-23',18,'B'),
-	('MATH143','Jan-23',21,'A'),
-	('MATH143','Jan-23',21,'B'),
-	('MATH143','Jan-23',21,'C'),
-	('MATH247','Jan-23',20,'A'),
-	('MATH247','Jan-23',20,'B'),
-	('ME165','Jan-23',21,'A');
-INSERT INTO public.courses_sections (course_id,"session",batch,"section") VALUES
-	('ME165','Jan-23',21,'B'),
-	('ME165','Jan-23',21,'C'),
-	('ME174','Jan-23',21,'A1'),
-	('ME174','Jan-23',21,'A2'),
-	('ME174','Jan-23',21,'B1'),
-	('ME174','Jan-23',21,'B2'),
-	('ME174','Jan-23',21,'C1'),
-	('ME174','Jan-23',21,'C2'),
-	('CSE423','Jan-23',18,'B');
 
 INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", level_term) VALUES
 	-- Level 1, Term 1 Courses
@@ -667,65 +453,16 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('CSE273', 'Computer Programming and Numerical Analysis for Materials Modeling', 0, 3.00, 'CSE', 'NCE', 'L-2 T-1'),
 	('CSE274', 'Computer Programming and Numerical Analysis for Materials Modeling Sessional', 1, 1.50, 'CSE', 'NCE', 'L-2 T-1');
 
+INSERT INTO public.hosted_departments (department) VALUES
+	('CHEM'),
+	('CSE'),
+	('EEE'),
+	('HUM'),
+	('IPE'),
+	('MATH'),
+	('ME'),
+	('PHY');
 
-INSERT INTO public.departmental_level_term (level_term_section, full_name, level_term, department) VALUES
-	('1/1/A',	'Level 1, Term 1 (Sec A)',	'L-1 T-1',	'CSE'),
-	('1/1/B',	'Level 1, Term 1 (Sec B)',	'L-1 T-1',	'CSE'),
-	('1/1/C',	'Level 1, Term 1 (Sec C)',	'L-1 T-1',	'CSE'),
-	('1/2/A',	'Level 1, Term 2 (Sec A)',	'L-1 T-2',	'CSE'),
-	('1/2/B',	'Level 1, Term 2 (Sec B)',	'L-1 T-2',	'CSE'),
-	('1/2/C',	'Level 1, Term 2 (Sec C)',	'L-1 T-2',	'CSE'),
-	('2/1/A',	'Level 2, Term 1 (Sec A)',	'L-2 T-1',	'CSE'),
-	('2/1/B',	'Level 2, Term 1 (Sec B)',	'L-2 T-1',	'CSE'),
-	('2/1/C',	'Level 2, Term 1 (Sec C)',	'L-2 T-1',	'CSE'),
-	('2/2/A',	'Level 2, Term 2 (Sec A)',	'L-2 T-2',	'CSE'),
-	('2/2/B',	'Level 2, Term 2 (Sec B)',	'L-2 T-2',	'CSE'),
-	('2/2/C',	'Level 2, Term 2 (Sec C)',	'L-2 T-2',	'CSE'),
-	('3/1/A',	'Level 3, Term 1 (Sec A)',	'L-3 T-1',	'CSE'),
-	('3/1/B',	'Level 3, Term 1 (Sec B)',	'L-3 T-1',	'CSE'),
-	('3/1/C',	'Level 3, Term 1 (Sec C)',	'L-3 T-1',	'CSE'),
-	('3/2/A',	'Level 3, Term 2 (Sec A)',	'L-3 T-2',	'CSE'),
-	('3/2/B',	'Level 3, Term 2 (Sec B)',	'L-3 T-2',	'CSE'),
-	('3/2/C',	'Level 3, Term 2 (Sec C)',	'L-3 T-2',	'CSE'),
-	('4/1/A',	'Level 4, Term 1 (Sec A)',	'L-4 T-1',	'CSE'),
-	('4/1/B',	'Level 4, Term 1 (Sec B)',	'L-4 T-1',	'CSE'),
-	('4/2/A',	'Level 4, Term 2 (Sec A)',	'L-4 T-2',	'CSE'),
-	('4/2/B',	'Level 4, Term 2 (Sec B)',	'L-4 T-2',	'CSE'),
-	('EEE/1/1',	'Level 1, Term 1',	'L-1 T-1',	'EEE'),
-	('EEE/4/1',	'Level 4, Term 1',	'L-4 T-1',	'EEE'),
-	('BME/2/1',	'Level 2, Term 1',	'L-2 T-1',	'BME'),
-	('BME/2/2',	'Level 2, Term 2',	'L-2 T-2',	'BME'),
-	('BME/3/1',	'Level 3, Term 1',	'L-3 T-1',	'BME'),
-	('BME/4/1',	'Level 4, Term 1',	'L-4 T-1',	'BME'),
-	('MME/2/1',	'Level 2, Term 1',	'L-2 T-1',	'MME'),
-	('IPE/2/1',	'Level 2, Term 1',	'L-2 T-1',	'IPE'),
-	('URP/1/2',	'Level 1, Term 2',	'L-1 T-2',	'URP'),
-	('NCE/2/1',	'Level 2, Term 1',	'L-2 T-1',	'NCE');
-INSERT INTO public.forms (id, type, response, initial) VALUES
-	('285d70ba-ab8a-43d1-b501-754b7d0ef22d',	'theory-pref',	'"CSE109","CSE101","CSE103"',	'MTM'),
-	('eb1caaeb-58a5-4e66-b421-c51979c6dd51',	'theory-pref',	'"CSE103","CSE109","CSE101"',	'IJ'),
-	('137662f0-4e7e-4872-84c2-bd41152d8b16',	'theory-pref',	'"CSE101","CSE103","CSE109"',	'KRV'),
-	('512093eb-44f2-42b5-bf63-45f40a5b0445',	'theory-pref',	'"CSE101","CSE103","CSE109"',	'SMH'),
-	('a2de7d2d-7af3-4429-8c2b-48bd7f9813f8',	'theory-pref',	'"CSE103","CSE101","CSE109"',	'MUS'),
-	('2092b23b-044c-43a7-8c13-91227f92bfa9',	'theory-pref',	'"CSE103","CSE101","CSE109"',	'FNW'),
-	('e9b2d3d3-b120-49dc-adcf-c97a86cc9076',	'theory-pref',	'"CSE109","CSE101","CSE103"',	'SRK'),
-	('2f7c28cf-f165-4c78-88ea-43ab4ab08d96',	'theory-pref',	'"CSE101","CSE103","CSE109"',	'SAH'),
-	('d99885ba-6595-4cd3-91cf-f64e0ec9e762',	'theory-sched',	'{"day":"Sunday","time":"10","batch":"21","section":"A"},{"day":"Monday","time":"12","batch":"21","section":"A"},{"day":"Tuesday","time":"11","batch":"21","section":"A"},{"day":"Sunday","time":"9","batch":"21","section":"B"},{"day":"Monday","time":"9","batch":"21","section":"B"},{"day":"Tuesday","time":"12","batch":"21","section":"B"},{"day":"Sunday","time":"12","batch":"21","section":"C"},{"day":"Tuesday","time":"9","batch":"21","section":"C"},{"day":"Monday","time":"11","batch":"21","section":"C"}',	'IJ'),
-	('2709a112-3c27-419f-9f84-ed5e20947772',	'theory-sched',	'{"day":"Sunday","time":"9","batch":"21","section":"A"},{"day":"Tuesday","time":"9","batch":"21","section":"A"},{"day":"Wednesday","time":"10","batch":"21","section":"A"},{"day":"Saturday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"B"},{"day":"Tuesday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"C"},{"day":"Tuesday","time":"10","batch":"21","section":"C"},{"day":"Wednesday","time":"9","batch":"21","section":"C"}',	'SAH'),
-	('2d1a7f54-29da-4655-9904-73f92fa93a3c',	'theory-sched',	'{"day":"Sunday","time":"9","batch":"21","section":"A"},{"day":"Tuesday","time":"9","batch":"21","section":"A"},{"day":"Wednesday","time":"10","batch":"21","section":"A"},{"day":"Saturday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"B"},{"day":"Tuesday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"C"},{"day":"Tuesday","time":"10","batch":"21","section":"C"},{"day":"Wednesday","time":"9","batch":"21","section":"C"}',	'KRV'),
-	('c23bfc3c-cc0f-41ca-b0b6-2f42c2af03b8',	'theory-sched',	'{"day":"Sunday","time":"9","batch":"21","section":"A"},{"day":"Tuesday","time":"10","batch":"21","section":"A"},{"day":"Wednesday","time":"9","batch":"21","section":"A"},{"day":"Sunday","time":"10","batch":"21","section":"B"},{"day":"Tuesday","time":"9","batch":"21","section":"B"},{"day":"Wednesday","time":"10","batch":"21","section":"B"},{"day":"Saturday","time":"10","batch":"21","section":"C"},{"day":"Sunday","time":"10","batch":"21","section":"C"},{"day":"Wednesday","time":"10","batch":"21","section":"C"}',	'MTM'),
-	('ef2216e3-ea6f-4d83-8ce4-8d78c8eb64ef',	'theory-sched',	'{"day":"Sunday","time":"9","batch":"21","section":"A"},{"day":"Tuesday","time":"9","batch":"21","section":"A"},{"day":"Wednesday","time":"10","batch":"21","section":"A"},{"day":"Saturday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"B"},{"day":"Tuesday","time":"10","batch":"21","section":"B"},{"day":"Sunday","time":"10","batch":"21","section":"C"},{"day":"Tuesday","time":"10","batch":"21","section":"C"},{"day":"Wednesday","time":"9","batch":"21","section":"C"}',	'SMH'),
-	('ff98b8f5-f6f4-40bc-9d77-7f03bcf1a872',	'theory-sched',	'{"day":"Sunday","time":"9","batch":"21","section":"A"},{"day":"Tuesday","time":"10","batch":"21","section":"A"},{"day":"Wednesday","time":"9","batch":"21","section":"A"},{"day":"Sunday","time":"10","batch":"21","section":"B"},{"day":"Tuesday","time":"9","batch":"21","section":"B"},{"day":"Wednesday","time":"10","batch":"21","section":"B"},{"day":"Saturday","time":"10","batch":"21","section":"C"},{"day":"Sunday","time":"10","batch":"21","section":"C"},{"day":"Wednesday","time":"10","batch":"21","section":"C"}',	'SRK'),
-	('9c0fdd37-ee74-4d32-93aa-6a5b77732bd3',	'theory-sched',	'{"day":"Sunday","time":"10","batch":"21","section":"A"},{"day":"Monday","time":"12","batch":"21","section":"A"},{"day":"Tuesday","time":"11","batch":"21","section":"A"},{"day":"Sunday","time":"9","batch":"21","section":"B"},{"day":"Monday","time":"9","batch":"21","section":"B"},{"day":"Tuesday","time":"12","batch":"21","section":"B"},{"day":"Sunday","time":"12","batch":"21","section":"C"},{"day":"Tuesday","time":"9","batch":"21","section":"C"},{"day":"Monday","time":"11","batch":"21","section":"C"}',	'FNW'),
-	('13156d48-75dd-41ea-8278-707e6361b390',	'theory-sched',	'{"day":"Sunday","time":"10","batch":"21","section":"A"},{"day":"Monday","time":"12","batch":"21","section":"A"},{"day":"Tuesday","time":"11","batch":"21","section":"A"},{"day":"Sunday","time":"9","batch":"21","section":"B"},{"day":"Monday","time":"9","batch":"21","section":"B"},{"day":"Tuesday","time":"12","batch":"21","section":"B"},{"day":"Sunday","time":"12","batch":"21","section":"C"},{"day":"Tuesday","time":"9","batch":"21","section":"C"},{"day":"Monday","time":"11","batch":"21","section":"C"}',	'MUS'),
-	('b0b63ff4-0b0c-4323-b999-1c2d1affb690',	'sessional-pref',	'"CSE102","CSE110"',	'FNW'),
-	('9201328e-1e6a-4ee1-bc7a-39903936406e',	'sessional-pref',	'"CSE110","CSE102"',	'SRK'),
-	('5d77d272-ac4e-4a60-8b72-5e094c770039',	'sessional-pref',	'"CSE102","CSE110"',	'SMH'),
-	('1e6bc742-225f-47c6-b6f0-6d5f9a08e8c9',	'sessional-pref',	'"CSE102","CSE110"',	'KRV'),
-	('57790095-b1bd-41fe-806e-c3f6bd3897ac',	'sessional-pref',	'"CSE110","CSE102"',	'MTM'),
-	('7b51df87-1f66-4cd0-8806-62d0417a44a3',	'sessional-pref',	'"CSE102","CSE110"',	'MUS'),
-	('8521da6d-3565-42fb-975c-9de35226bbba',	'sessional-pref',	'"CSE102","CSE110"',	'SAH'),
-	('003c2d4f-85ba-4c93-9c1e-6dad908bb929',	'sessional-pref',	'"CSE110","CSE102"',	'IJ');
 INSERT INTO default_section_count (department, section_count, subsection_count_per_section) VALUES
 	('CSE', 3, 2),
 	('EEE', 3, 2),
@@ -779,13 +516,3 @@ INSERT INTO public.section_count (batch, department, section_count, subsection_c
 	('24', 'MME', 1, 2),
 	('24', 'NCE', 1, 1),
 	('24', 'URP', 1, 1);
-
-INSERT INTO public.hosted_departments (department) VALUES
-	('CHEM'),
-	('CSE'),
-	('EEE'),
-	('HUM'),
-	('IPE'),
-	('MATH'),
-	('ME'),
-	('PHY');
