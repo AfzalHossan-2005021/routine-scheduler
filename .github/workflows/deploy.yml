@@ -31,17 +31,35 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+        echo "SSH key setup complete"
+        
+    - name: Add host to known_hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts || echo "Host key scan failed, continuing..."
+        echo "Known hosts updated"
 
     - name: Test SSH Connection
       run: |
-        ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
+        echo "Testing SSH connection to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}"
+        ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
 
-    - name: Copy Project to VM via rsync
+    - name: Check target directory
       run: |
-        rsync -avz --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' \
+        echo "Checking target directory structure..."
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "ls -la ${{ secrets.VM_PROJECT_PATH }}"
+
+    - name: Copy Project to VM via rsync (with verbose output)
+      run: |
+        echo "Starting rsync to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}"
+        rsync -avz --progress --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
           -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-          ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}
+          ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/ || {
+            echo "Rsync failed with exit code $?"
+            echo "Trying rsync without --delete flag..."
+            rsync -avz --progress --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
+              -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+              ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/
+          }
 
     - name: Restart Docker Compose on VM
       run: |
