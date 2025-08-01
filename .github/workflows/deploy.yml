@@ -28,16 +28,24 @@ jobs:
 
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.VM_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Test SSH Connection
+      run: |
+        ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
 
     - name: Copy Project to VM via rsync
       run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}
+        rsync -avz --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' \
+          -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}
 
     - name: Restart Docker Compose on VM
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << EOF
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           cd ${{ secrets.VM_PROJECT_PATH }}
           docker compose down
           docker compose up -d --build
