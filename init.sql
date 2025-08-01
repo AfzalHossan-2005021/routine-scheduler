@@ -85,7 +85,7 @@ CREATE TABLE public.sections (
 	level_term varchar NOT NULL,
 	department character varying DEFAULT 'CSE'::character varying NOT NULL,
 	CONSTRAINT sections_pk PRIMARY KEY (department, batch, section),
-	CONSTRAINT sections_department_level_term_fkey FOREIGN KEY (department, level_term) REFERENCES public.level_term_unique(department, level_term)
+	CONSTRAINT sections_department_level_term_fkey FOREIGN KEY (department, level_term) REFERENCES public.level_term_unique(department, level_term) ON DELETE CASCADE
 );
 
 CREATE TABLE public.teacher_assignment (
