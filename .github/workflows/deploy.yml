@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout Code with Submodules
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Placeholder test step
       run: echo "✅Tests haven't been implemented yet. Skipping......"  
@@ -23,8 +26,11 @@ jobs:
     needs: test
 
     steps:
-    - name: Checkout Code
+    - name: Checkout Code with Submodules
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up SSH key
       run: |
