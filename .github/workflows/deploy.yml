@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout Code with Submodules
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Placeholder test step
       run: echo "✅Tests haven't been implemented yet. Skipping......"  
@@ -23,21 +26,50 @@ jobs:
     needs: test
 
     steps:
-    - name: Checkout Code
+    - name: Checkout Code with Submodules
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.VM_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-
-    - name: Copy Project to VM via rsync
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        echo "SSH key setup complete"
+        
+    - name: Add host to known_hosts
       run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts || echo "Host key scan failed, continuing..."
+        echo "Known hosts updated"
+
+    - name: Test SSH Connection
+      run: |
+        echo "Testing SSH connection to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}"
+        ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
+
+    - name: Check target directory
+      run: |
+        echo "Checking target directory structure..."
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "ls -la ${{ secrets.VM_PROJECT_PATH }}"
+
+    - name: Copy Project to VM via rsync (with verbose output)
+      run: |
+        echo "Starting rsync to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}"
+        rsync -avz --progress --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
+          -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/ || {
+            echo "Rsync failed with exit code $?"
+            echo "Trying rsync without --delete flag..."
+            rsync -avz --progress --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
+              -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+              ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/
+          }
 
     - name: Restart Docker Compose on VM
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << EOF
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           cd ${{ secrets.VM_PROJECT_PATH }}
           docker compose down
           docker compose up -d --build

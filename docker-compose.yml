@@ -6,9 +6,9 @@ services:
       - "3000"
     depends_on:
       - backend
-    volumes:
-      - ./routine-scheduler-frontend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./routine-scheduler-frontend:/app
+    #   - /app/node_modules
     # networks:
     #   - app-network
 
@@ -20,8 +20,6 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./routine-scheduler-backend:/app
-      - /app/node_modules
       - ./db-backups:/backups
     # networks:
     #   - app-network
