@@ -317,7 +317,7 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('MATH241', 'Advanced Calculus', 0, 3.00, 'MATH', 'CSE', 'L-2 T-1'),
 
 	-- Level 2, Term 2 Courses
-	('CSE200', 'Technical Writing and Presentation', 0, 0.75, 'CSE', 'CSE', 'L-2 T-2'),
+	('CSE200', 'Technical Writing and Presentation', 1, 0.75, 'CSE', 'CSE', 'L-2 T-2'),
 	('CSE209', 'Computer Architecture', 0, 3.00, 'CSE', 'CSE', 'L-2 T-2'),
 	('CSE210', 'Computer Architecture Sessional', 1, 0.75, 'CSE', 'CSE', 'L-2 T-2'),
 	('CSE211', 'Theory of Computation', 0, 3.00, 'CSE', 'CSE', 'L-2 T-2'),
@@ -346,7 +346,7 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('CSE326', 'Information Systems Development and Management Sessional', 1, 1.50, 'CSE', 'CSE', 'L-3 T-2'),
 	('CSE329', 'Machine Learning', 0, 3.00, 'CSE', 'CSE', 'L-3 T-2'),
 	('CSE330', 'Machine Learning Sessional', 1, 1.50, 'CSE', 'CSE', 'L-3 T-2'),
-	('CSE450', 'Capstone Project', 0, 1.50, 'CSE', 'CSE', 'L-3 T-2'),
+	('CSE450', 'Capstone Project', 1, 1.50, 'CSE', 'CSE', 'L-3 T-2'),
 	('HUM347', 'Ethics in Society and E-Governance', 0, 3.00, 'HUM', 'CSE', 'L-3 T-2'),
 
 	-- Level 4, Term 1 Courses
