@@ -34,15 +34,6 @@ CREATE TABLE public.forms (
 );
 CREATE INDEX forms_key_idx ON public.forms USING btree (id);
 
-CREATE TABLE public.lab_room_assignment (
-	course_id varchar NOT NULL,
-	"session" varchar NOT NULL,
-	batch int4 NOT NULL,
-	"section" varchar NOT NULL,
-	room varchar NULL,
-	CONSTRAINT lab_room_assignment_pk PRIMARY KEY (course_id, session, batch, section)
-);
-
 CREATE TABLE public.rooms (
 	room varchar NOT NULL,
 	"type" int4 NULL,
@@ -186,34 +177,34 @@ INSERT INTO public.configs ("key",value) VALUES
 	('TERM_COUNT', '2');
 
 INSERT INTO public.rooms (room,"type") VALUES
-	('MCL',1),
-	('MML',1),
-	('CL',1),
-	('SEL',1),
-	('NL',1),
-	('IL',1),
-	('DL',1),
-	('PL',1),
-	('BL',1),
-	('DBL',1);
-INSERT INTO public.rooms (room,"type") VALUES
-	('WNL',1),
-	('VDAL',1),
-	('AIRL',1),
-	('IAC',1),
-	('103',0),
-	('104',0),
-	('107',0),
-	('108',0),
-	('109',0),
-	('203',0);
-INSERT INTO public.rooms (room,"type") VALUES
-	('204',0),
-	('205',0),
-	('206',0),
-	('207',0),
-	('903',0),
-	('504',0);
+('MCL', 1),
+('MML', 1),
+('CL', 1),
+('SEL', 1),
+('NL', 1),
+('IL', 1),
+('DL', 1),
+('PL', 1),
+('BL', 1),
+('DBL', 1),
+('WNL', 1),
+('VDAL', 1),
+('AIRL', 1),
+('IAC', 1),
+('103', 0),
+('104', 0),
+('107', 0),
+('108', 0),
+('109', 0),
+('203', 0),
+('204', 0),
+('205', 0),
+('206', 0),
+('207', 0),
+('504', 0),
+('903', 0),
+('904', 0);
+
 INSERT INTO public.level_term_unique (level_term, department) VALUES
 	('L-2 T-1',	'BME'),
 	('L-2 T-2',	'BME'),
