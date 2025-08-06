@@ -31,6 +31,13 @@ jobs:
       with:
         submodules: recursive
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0  # Ensure full history is available
+        
+    - name: Update Submodules to Latest
+      run: |
+        git submodule update --init --recursive
+        git submodule foreach git checkout deployed
+        git submodule foreach git pull origin deployed
 
     - name: Set up SSH key
       run: |
@@ -57,15 +64,48 @@ jobs:
     - name: Copy Project to VM via rsync (with verbose output)
       run: |
         echo "Starting rsync to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}"
-        rsync -avz --progress --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' --exclude='.env' \
+        # First, backup the .env file on the server
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "cd ${{ secrets.VM_PROJECT_PATH }} && cp .env .env.backup 2>/dev/null || echo 'No .env file to backup'"
+        
+        # Rsync without deleting git directories and important files
+        rsync -avz --progress --delete \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='db-backups' \
+          --exclude='*.log' \
+          --exclude='.env' \
+          --exclude='.env.backup' \
+          --exclude='routine-scheduler-frontend/.git' \
+          --exclude='routine-scheduler-backend/.git' \
           -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
           ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/ || {
             echo "Rsync failed with exit code $?"
             echo "Trying rsync without --delete flag..."
-            rsync -avz --progress --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' --exclude='.env' \
+            rsync -avz --progress \
+              --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='db-backups' \
+              --exclude='*.log' \
+              --exclude='.env' \
+              --exclude='.env.backup' \
               -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
               ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/
           }
+        
+        # Restore the .env file on the server
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "cd ${{ secrets.VM_PROJECT_PATH }} && mv .env.backup .env 2>/dev/null || echo 'No .env backup to restore'"
+
+    - name: Update Submodules on Server
+      run: |
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          cd ${{ secrets.VM_PROJECT_PATH }}
+          echo "Updating submodules on server..."
+          git submodule update --init --recursive
+          cd routine-scheduler-frontend && git checkout deployed && git pull origin deployed
+          cd ../routine-scheduler-backend && git checkout deployed && git pull origin deployed
+          cd ..
+          echo "Submodules updated successfully"
+        EOF
 
     - name: Restart Docker Compose on VM
       run: |
