@@ -24,7 +24,6 @@ services:
     volumes:
       - ./routine-scheduler-backend:/app
       - /app/node_modules
-      - ./db-backups:/backups
     # networks:
     #   - app-network
     depends_on:
@@ -43,7 +42,6 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data:/var/lib/postgresql/data
-      - ./db-backups:/backups
     # networks:
     #   - app-network
 
@@ -68,5 +66,3 @@ services:
 volumes:
   db-data:
     driver: local
-  # db-backups:
-  #   driver: local
