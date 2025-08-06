@@ -57,12 +57,12 @@ jobs:
     - name: Copy Project to VM via rsync (with verbose output)
       run: |
         echo "Starting rsync to ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}"
-        rsync -avz --progress --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
+        rsync -avz --progress --delete --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' --exclude='.env' \
           -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
           ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/ || {
             echo "Rsync failed with exit code $?"
             echo "Trying rsync without --delete flag..."
-            rsync -avz --progress --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' \
+            rsync -avz --progress --exclude='.git' --exclude='node_modules' --exclude='db-backups' --exclude='*.log' --exclude='.env' \
               -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
               ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ secrets.VM_PROJECT_PATH }}/
           }
