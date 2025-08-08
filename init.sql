@@ -113,7 +113,8 @@ CREATE TABLE public.schedule_assignment (
 	CONSTRAINT schedule_assignment_check CHECK (((day)::text = ANY (ARRAY[('Saturday'::character varying)::text, ('Sunday'::character varying)::text, ('Monday'::character varying)::text, ('Tuesday'::character varying)::text, ('Wednesday'::character varying)::text]))),
 	CONSTRAINT schedule_assignment_pk PRIMARY KEY (department, batch, section, day, "time", course_id),
 	CONSTRAINT schedule_assignment_un UNIQUE (course_id, session, batch, section, day, "time", department),
-	CONSTRAINT schedule_assignment_fk FOREIGN KEY (course_id,"session") REFERENCES public.courses(course_id,"session"),
+	-- This constraint is commented out to fit CT in the routine. When courses table will be modified to include "level_term", this constraint should be uncommented.
+	-- CONSTRAINT schedule_assignment_fk FOREIGN KEY (course_id,"session") REFERENCES public.courses(course_id,"session"),
 	CONSTRAINT schedule_assignment_fk1 FOREIGN KEY (department, batch,"section") REFERENCES public.sections(department, batch,"section") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
