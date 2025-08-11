@@ -344,7 +344,7 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('HUM347', 'Ethics in Society and E-Governance', 0, 3.00, 'HUM', 'CSE', 'L-3 T-2', 0),
 
 	-- Level 4, Term 1 Courses
-	('CSE400-I', 'Project and Thesis', 1, 3.00, 'CSE', 'CSE', 'L-4 T-1', 0),
+	('CSE400-I', 'Project and Thesis', 1, 3.00, 'CSE', 'CSE', 'L-4 T-1', 1),
 	('CSE401', 'Numerical Analysis, Simulation and Modeling', 0, 3.00, 'CSE', 'CSE', 'L-4 T-1', 0),
 	('CSE402', 'Numerical Analysis, Simulation and Modeling Sessional', 1, 0.75, 'CSE', 'CSE', 'L-4 T-1', 0),
 	('CSE405', 'Cyber Security', 0, 3.00, 'CSE', 'CSE', 'L-4 T-1', 0),
@@ -353,7 +353,7 @@ INSERT INTO all_courses (course_id, name, type, class_per_week, "from", "to", le
 	('HUM475', 'Engineering Economics', 0, 3.00, 'HUM', 'CSE', 'L-4 T-1', 0),
 
 	-- Level 4, Term 2 Courses
-	('CSE400-II', 'Project and Thesis', 1, 3.00, 'CSE', 'CSE', 'L-4 T-2', 0),
+	('CSE400-II', 'Project and Thesis', 1, 3.00, 'CSE', 'CSE', 'L-4 T-2', 1),
 	('IPE493', 'Industrial Management', 0, 3.00, 'IPE', 'CSE', 'L-4 T-2', 0),
 	('HUM473', 'Financial, Cost and Managerial Accounting', 0, 2.00,'HUM', 'CSE', 'L-4 T-2', 0),
 	('HUM411', 'Business Law', 0, 2.00, 'HUM', 'CSE', 'L-4 T-2', 0),
